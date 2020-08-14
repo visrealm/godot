@@ -144,7 +144,7 @@ Error AudioDriverCoreAudio::init() {
 
 	unsigned int buffer_size = buffer_frames * channels;
 	samples_in.resize(buffer_size);
-	input_buf.resize(buffer_size);
+	input_buf.resize(buffer_size * 2);
 
 	print_verbose("CoreAudio: detected " + itos(channels) + " channels");
 	print_verbose("CoreAudio: audio buffer frames: " + itos(buffer_frames) + " calculated latency: " + itos(buffer_frames * 1000 / mix_rate) + "ms");
@@ -227,7 +227,7 @@ OSStatus AudioDriverCoreAudio::input_callback(void *inRefCon,
 	bufferList.mNumberBuffers = 1;
 	bufferList.mBuffers[0].mData = ad->input_buf.ptrw();
 	bufferList.mBuffers[0].mNumberChannels = ad->capture_channels;
-	bufferList.mBuffers[0].mDataByteSize = ad->input_buf.size() * sizeof(int16_t);
+	bufferList.mBuffers[0].mDataByteSize = ad->input_buf.size() * sizeof(int32_t);
 
 	OSStatus result = AudioUnitRender(ad->input_unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, &bufferList);
 	if (result == noErr) {
